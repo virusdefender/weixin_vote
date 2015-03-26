@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}
+
+{% endblock %}
+
+{% block javascriptblock %}
+
+{% endblock %}
+
+{% block body %}
+<header data-am-widget="header" class="am-header am-header-default">
+
+    <div class="am-header-left am-header-nav">
+        <a href="/signup/{{activity.id}}/" class="">
+
+            <i class="am-header-icon am-icon-home"></i>
+            <span class="am-header-nav-title">报名</span>
+        </a>
+    </div>
+
+    <h1 class="am-header-title">排名</h1>
+
+</header>
+
+    <!--
+    <table class="am-table am-table-bordered am-table-radius am-table-striped">
+        <thead>
+        <tr>
+            <th>排名</th>
+            <th>姓名</th>
+            <th>编号</th>
+            <th>票数</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        {% for item in vote_info %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.vote_id }}</td>
+            <td>{{ item.vote_number}}</td>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+    -->
+    <div class="am-g am-g-fixed">
+        {% for item in vote_info %}
+        <div class="am-u-sm-6 am-u-md-3 am-u-lg-3 {% if forloop.last %}am-u-end{% endif %}">
+            <div class="am-thumbnail">
+                <img src="{{item.pic}}!1" alt=""/>
+
+                <div class="am-thumbnail-caption">
+                    <h3>{{ item.name }}</h3>
+
+                    <p>编号:{{ item.vote_id }} 票数:{{ item.vote_number }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

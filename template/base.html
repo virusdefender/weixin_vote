@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="renderer" content="webkit">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ STATIC_URL }}favicon.ico"/>
+    <title>
+        {% block title %}投票系统{% endblock %}
+    </title>
+
+    <script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+
+    <script src="{{ STATIC_URL }}js/amazeui.min.js"></script>
+    <script src="{{ STATIC_URL }}js/upload.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/amazeui.css">
+
+    {% block cssblock %}
+    {% endblock %}
+    {% block javascriptblock %}
+
+
+    {% endblock %}
+</head>
+<body>
+<script>
+    function get_cookie(cookie_name) {
+        var name = cookie_name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1);
+            if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+
+    var csrf_token = get_cookie("csrftoken")
+</script>
+{% block body %}
+{% endblock %}
+
+<footer data-am-widget="footer" class="am-footer am-footer-default">
+
+    <div class="am-footer-miscs ">
+
+        <p>Copyright © 2014-2015</p>
+    </div>
+</footer>
+
+</body>
+</html>

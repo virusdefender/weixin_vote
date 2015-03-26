@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}
+
+{% endblock %}
+{% block cssblock %}
+<link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap.css">
+<link href="{{STATIC_URL}}css/bootstrap-datetimepicker.css" rel="stylesheet">
+{% endblock %}
+{% block javascriptblock %}
+<script src="/static/js/bootstrap-datetimepicker.js"></script>
+<script src="/static/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="/static/js/chart.js"></script>
+{% endblock %}
+
+{% block body %}
+<script>
+     var voter_info_name = "{{voter_info.name}}";
+     var voter_info_id = "{{voter_info.id}}";
+</script>
+<h2>{{activity.name}} {{voter_info.name}}投票统计</h2>
+开始时间：
+<input type="text" value="" id="start_time">
+结束时间；
+<input type="text" value="" id="end_time">
+时间间隔(分钟)：
+<input type="text" value="5" id="limit">
+<button onclick="create_chart()">创建统计图表</button>
+<div>
+
+    <canvas id="chart_id"></canvas>
+</div>
+<script>
+    $('#start_time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language: 'zh-CN'
+    });
+    $('#end_time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language: 'zh-CN'
+    });
+
+    Array.prototype.max = function(){   //最大值
+     return Math.max.apply({},this)
+    };
+
+    Array.prototype.min = function(){   //最小值
+     return Math.min.apply({},this)
+    };
+
+    function _create_chart(time_list, vote_list)
+    {
+        var ctx = $("#chart_id").get(0).getContext("2d");
+        var chart = new Chart(ctx);
+        var data = {
+            labels : time_list,
+            datasets : [
+                {
+                    label: "票数",
+                    fillColor : "rgba(151,187,205,0.5)",
+                    strokeColor : "rgba(151,187,205,1)",
+                    pointColor : "rgba(151,187,205,1)",
+                    pointStrokeColor : "#fff",
+                    data : vote_list
+                }
+            ]
+        };
+        new Chart(ctx).Line(data, {
+            responsive : true,
+            scaleOverride: true,
+            scaleSteps: Math.max.apply(Math, vote_list),
+            scaleStepWidth: 1,
+            scaleStartValue: 0
+        });
+    }
+
+    function create_chart() {
+
+        var start_time = $("#start_time")[0].value;
+        var end_time = $("#end_time")[0].value;
+        var limit = $("#limit")[0].value;
+
+        if(start_time == "" || end_time == "" || limit == ""){
+            alert("数据错误");
+            return;
+        }
+
+        $.ajax({
+            url: "/chart/{{activity.id}}/?format=json&start_time=" + start_time + "&end_time=" + end_time+ "&limit=" + limit + "&voter_id=" + voter_info_id,
+            dataType: "json",
+            method: "get",
+            success: function (response) {
+
+                _create_chart(response.time_list, response.vote_list)
+            }
+        });
+    }
+</script>
+{% endblock %}

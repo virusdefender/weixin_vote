@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}
+
+{% endblock %}
+
+{% block javascriptblock %}
+<script src="{{ STATIC_URL }}js/avalon.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<header data-am-widget="header" class="am-header am-header-default">
+    <!--
+        <div class="am-header-left am-header-nav">
+            <a href="#left-link" class="">
+                <span class="am-header-nav-title">首页</span>
+                <i class="am-header-icon am-icon-home"></i>
+            </a>
+        </div>
+        -->
+    <h1 class="am-header-title">报名页面</h1>
+
+    <div class="am-header-right am-header-nav">
+        <a href="/show/{{activity.id}}/" class="">
+            <i class="am-header-icon am-icon-bars"></i>
+            <span class="am-header-nav-title">排名</span>
+        </a>
+    </div>
+</header>
+{% verbatim %}
+<div ms-controller="signup" class="am-container">
+
+    <form class="am-form">
+        <fieldset>
+            <div class="am-form-group">
+                <label>姓名</label>
+                <input type="text" class="" placeholder="输入您的姓名" ms-duplex="name" maxlength="20">
+            </div>
+            <div class="am-form-group">
+                <label>手机</label>
+                <input type="text" class="" maxlength="11" placeholder="您的手机号码" ms-duplex="phone">
+            </div>
+            <div class="am-form-group">
+                <label>地址</label>
+                <input type="text" class="" placeholder="您的地址" ms-duplex="address" maxlength="30">
+            </div>
+            <div class="am-form-group">
+                <label>图片</label>
+                <input type="file" id="image" name="image">
+
+                <p class="am-form-help">请选择要上传的文件...</p>
+            </div>
+            <p>
+                <button type="button" class="am-btn am-btn-default" ms-click="submit_info">{{button}}</button>
+            </p>
+        </fieldset>
+    </form>
+</div>
+{% endverbatim %}
+<script>
+    var activity_id = {{ activity.id }};
+</script>
+{% verbatim %}
+<script>
+    var vm = avalon.define({
+        $id: "signup",
+        name: "dd",
+        phone: "11111111111",
+        address: "11",
+        image: "",
+        button: "提交",
+        submit_info: function () {
+            if (vm.name == "") {
+                alert("请输入姓名");
+                return;
+            }
+            if (vm.phone == "") {
+                alert("请输入手机号码");
+                return;
+            }
+            if (vm.phone.length != 11) {
+                alert("请正确输入11位手机号码");
+                return;
+            }
+            if (vm.address == "") {
+                alert("请输入地址");
+                return;
+            }
+            if ($("#image").val() == "") {
+                alert("请选择并上传图片");
+                return;
+            }
+
+            vm.button = "正在上传，请稍后..."
+
+            $.ajaxFileUpload({
+                url: "/upload/",
+                secureuri: false,
+                fileElementId: 'image',
+                dataType: "json",
+
+                beforeSend: function () {
+                },
+                complete: function (data) {
+                    vm.image = data.responseText;
+                    $.ajax({
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                        },
+                        url: "/signup/" + activity_id + "/",
+                        method: "post",
+                        dataType: "json",
+                        data: JSON.stringify({name: vm.name, phone: vm.phone, address: vm.address, image: vm.image}),
+                        success: function (response) {
+                            alert("您的投票序号是" + response.vote_id);
+                            window.location.href = "/show/" + activity_id + "/";
+                        },
+                        error: function (response) {
+                            alert("提交失败");
+                        }
+                    });
+                }
+            });
+
+        }
+    });
+</script>
+{% endverbatim %}
+
+
+{% endblock %}
